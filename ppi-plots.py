@@ -1,21 +1,39 @@
-from Bio import SeqIO # https://biopython.org/wiki/SeqIO
+# %%
+
+from Bio import SeqIO  # https://biopython.org/wiki/SeqIO
 import matplotlib.pyplot as plt
 import pandas as pd
+import os, sys
 import numpy as np
 from scipy import stats
 import seaborn as sns
 sns.set(color_codes=True)
+import Bio  # https://biopython.org/wiki/SeqIO
 
-from ggplot import * # http://ggplot.yhathq.com/
+# %%
 
 
+# get the right path
+import inspect
+# this_file_path = os.path.abspath(inspect.getframeinfo(inspect.currentframe()).filename)
+# this_dir = os.path.dirname(this_file_path)
+dir_path = "/Users/universal/Google Drive/GOOGLE DRIVE/UNIVERSITY/BIOINFORMATICS/BIOINFO - PBL/ML-Protein-Protein-Interaction/"
+
+print(dir_path)
+seq_path = os.path.join(dir_path, "data", "PP_step1_trn.fas")
+label_path = os.path.join(dir_path, "data", "PP_step1_trn.class")
 
 # Importing the amino acids
 prot_list = []
-for record in SeqIO.parse("PP_step1_trn.fasta", "fasta"):
+
+
+for record in SeqIO.parse(seq_path, "fasta"):
     seq = str(record.seq)
     prot_list.append(seq)
 prot_series = pd.Series(prot_list)
+
+
+# %%
 
 # Creating a length series for the amino acids
 seq_len = []
@@ -25,17 +43,26 @@ len_series = pd.Series(seq_len)
 
 # Importing the labels
 label_list = []
-for record in SeqIO.parse("PP_step1_trn copy.fasta", "fasta"):
+for record in SeqIO.parse(label_path, "fasta"):
     seq = str(record.seq)
     label_list.append(seq)
 label_series = pd.Series(label_list)
-label_series.describe() # Non_Bind: 651; Bind: 536
+print(label_series.describe()) # Non_Bind: 651; Bind: 536
 
 
 # Combining length series and labels into one data frame
 data = {"Labels" : label_list, "Length" : seq_len}
 prot_df = pd.DataFrame(data, columns = ["Labels", "Length"])
 
+
+
+#%%
+# Plotting the average distance between amino acids
+
+
+
+
+# %%
 
 # Hypothesis 1: protein length is in relation to binding properties
 ax = sns.boxplot(x="Labels", y="Length", data=prot_df)
