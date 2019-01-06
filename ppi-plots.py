@@ -47,19 +47,75 @@ for record in SeqIO.parse(label_path, "fasta"):
     seq = str(record.seq)
     label_list.append(seq)
 label_series = pd.Series(label_list)
-print(label_series.describe()) # Non_Bind: 651; Bind: 536
+
 
 
 # Combining length series and labels into one data frame
-data = {"Labels" : label_list, "Length" : seq_len}
-prot_df = pd.DataFrame(data, columns = ["Labels", "Length"])
+data = {"Labels" : label_list, "Length" : seq_len, "Sequence" : prot_list}
+prot_df = pd.DataFrame(data, columns = ["Labels", "Length", "Sequence"])
 
+# changing the bind/nonbind labels to numerical values
+prot_df["Labels"] = prot_df["Labels"].apply(lambda x: 1 if x == "Bind" else 0)
+
+print("here1")
+print(prot_df.count())
+
+# Sorting out all the duplicate entries # TODO: fix that to much of the rows are dropped, result should be 905
+# prot_df = prot_df.drop_duplicates().reset_index()
+
+
+print("here2")
+print(prot_df.count())
+
+
+# print(label_series.describe()) # Non_Bind: 651; Bind: 536
 
 
 #%%
 # Plotting the average distance between amino acids
 
 
+prot_labels = {"C_avg_d", "D_avg_d", "S_avg_d", "Q_avg_d", "K_avg_d", "I_avg_d", "P_avg_d", "T_avg_d", "F_avg_d", "N_avg_d", "G_avg_d", "H_avg_d", "L_avg_d", "R_avg_d", "W_avg_d", "A_avg_d", "V_avg_d", "E_avg_d", "Y_avg_d", "M_avg_d","X_avg_d", "Z_avg_d"}
+prot_list = {"C", "D", "S", "Q", "K", "I", "P", "T", "F", "N", "G", "H", "L", "R", "W", "A", "V", "E", "Y", "M","X", "Z"}
+
+avg_dist_df = pd.DataFrame(columns=prot_labels)
+avg_dist_df
+
+part_to_add = "_avg_d"
+
+first = 0
+
+for i in range(len(prot_df)):
+    seq = prot_df.iat[i, 2]
+    prot_dict = {"C_avg_d": 0, "D_avg_d": 0, "S_avg_d": 0, "Q_avg_d": 0, "K_avg_d": 0, "I_avg_d": 0, "P_avg_d": 0,
+                 "T_avg_d": 0, "F_avg_d": 0, "N_avg_d": 0, "G_avg_d": 0, "H_avg_d": 0, "L_avg_d": 0, "R_avg_d": 0,
+                 "W_avg_d": 0, "A_avg_d": 0, "V_avg_d": 0, "E_avg_d": 0, "Y_avg_d": 0, "M_avg_d": 0, "X_avg_d": 0,
+                 "Z_avg_d": 0}
+    for prot in prot_list:
+        avg_dist = 0
+        freq_count = 0
+        dist_count = 0
+
+
+        for char in seq:
+            if char == prot:
+                freq_count += 1
+
+            if freq_count >= 1:
+                dist_count += 1
+        if freq_count >= 1:
+            avg_dist = freq_count / dist_count
+            prot_add = prot + part_to_add
+            prot_dict[prot_add] = avg_dist
+            if first == 0:
+                print(prot_dict)
+                first = 1
+        avg_dist_df = avg_dist_df.append(prot_dict, ignore_index=True)
+
+        # TODO fix the wrong value error, first sequence definitely contains a K
+
+
+print(prot_df.iat[0, 2])
 
 
 # %%
