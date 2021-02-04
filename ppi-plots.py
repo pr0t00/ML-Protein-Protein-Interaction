@@ -71,6 +71,7 @@ print(prot_df.count())
 
 
 # Hypothesis 1: protein length is in relation to binding properties
+#prot_df["Labels"] = prot_df["Labels"].apply(lambda x: "Interact" if x == "Bind" else "Non-interact")
 plt.figure
 ax = sns.violinplot(x="Labels", y="Length", data=prot_df)
 plt.savefig("violinplot_len-and-labels", dpi=300)
@@ -154,10 +155,12 @@ sns.set(rc={'figure.figsize':(20,8.27)})
 plt.rcParams["axes.labelsize"] = 20
 sns.set(font_scale = 2)
 
+df["Labels"] = df["Labels"].apply(lambda x: "Interact" if x == "Bind" else "Non-interact")
+
 ax = sns.violinplot(width=0.9, gridsize=100, x="variable", y="value", hue="Labels", data=df, palette="muted", split=True)
-ax.set(xlabel='Proteins', ylabel='Frequency')
+ax.set(xlabel='Amino-acids', ylabel='Frequency')
 plt.setp(ax.get_legend().get_texts(), fontsize='17')
-plt.savefig("frequency_proteins_violin", dpi=300)
+plt.savefig("amino-acids-frequency.png", dpi=300)
 plt.show()
 
 
